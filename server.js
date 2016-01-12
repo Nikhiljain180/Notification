@@ -25,55 +25,34 @@ io = io.listen(app.listen(3000, function() {
     console.info('Application started on port : 3000');
 }));
 
+function getNotifications() {
+    return Notifications.find({}).exec();
+}
+
 var db = mongoose.connect(dbConfig.uri);
 db.connection.on('open', function callback() {
     io.sockets.on('connection', function (socket) {
 
-        /*Event Handlers*/
-        socket.on('subscription', function (obj) {
-            User.findOne({_id:obj.user})
-                .populate('subscriptions.subscriptionType')
-                .populate('subscriptions.characterId')
-                .exec()
-                .then(function(subs){
-                    console.info('hereeeeee.... ', subs);
-                    socket.emit('subscription', {subs: subs});
-
-                });
-        });
-
-        socket.on('notification', function(obj) {
-            var collection = mongoose.connection.db.collection('Activities');
-             /*Create tailable cursor for Activities collection*/
-            var stream = collection.find({}, {
-                tailable: true,
-                awaitdata: true,
-                numberOfRetries: Number.MAX_VALUE
-            }).stream();
-
-            stream.on('data', function(activity) {
-                var actObj = activity;
-                if(activity.read === false && activity.type == obj.typeId && activity.characterId == obj.characterId) {
-                    socket.emit('notify', {obj:activity});
-                    actObj.read = true;
-                    Activities.update({_id:activity._id}, actObj, function(a, b){});
-                }
+        function getUnreadNotification() {
+            getNotifications().then(function(notifs) {
+                socket.emit('notification', notifs);
             });
+        }
 
-            stream.on('error', function(val) {
-                console.log('Error: %j', val);
-            });
-
-            stream.on('end', function(){
-                console.log('End of stream');
-            });
-        });
+        setInterval(getUnreadNotification,60000);
     });
 });
+
 
 /*Render index.html as homepage*/
 app.get('/',function(req,res){
     res.render('index.html',{title:"Notification System"});
+});
+
+app.get('/notifications',function(req,res){
+    getNotifications().then(function(notifs) {
+        res.send(notifs);
+    });
 });
 
 

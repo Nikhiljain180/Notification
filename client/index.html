@@ -35,4 +35,25 @@
 
 </div>
 </body>
+<script>
+    getNotifications();
+    var socket = io.connect();
+
+    socket.on('notification', function (subs) {
+        //update the notification count
+    });
+
+    function getNotifications() {
+        $.ajax({url: '/notifications',
+            success: function(notifs){
+                console.info('users : ', users);
+                //update the notification count
+            },
+            error: function(err) {
+                console.info('error : ', err);
+            }
+        });
+    }
+
+</script>
 </html>

@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
     app = express(),
     http = require('http'),
     io = require('socket.io'),
+    data = require('./server/data/notifications.json'),
     notification = require('./server/models/notification.server.model'),
     Notifications = mongoose.model('Notifications');
 
@@ -25,8 +26,22 @@ io = io.listen(app.listen(3000, function() {
     console.info('Application started on port : 3000');
 }));
 
+function getNotificationsCount() {
+    return Notifications.count({read:false}).exec();
+}
+
 function getNotifications() {
-    return Notifications.find({}).exec();
+    return Notifications.find({read: false}).exec();
+}
+
+function insertNotifications() {
+    Notifications.create(data, function(err, docs) {
+        if (err) {
+            console.info('Unable to save data : ', err);
+        } else {
+            console.info('Notifications were successfully stored: ', docs.length);
+        }
+    });
 }
 
 var db = mongoose.connect(dbConfig.uri);
@@ -34,14 +49,18 @@ db.connection.on('open', function callback() {
     io.sockets.on('connection', function (socket) {
 
         function getUnreadNotification() {
-            getNotifications().then(function(notifs) {
-                socket.emit('notification', notifs);
+            getNotificationsCount().then(function(count) {
+                socket.emit('notificationCount', {count : count});
             });
         }
 
         setInterval(getUnreadNotification,60000);
+
     });
 });
+insertNotifications();
+
+setInterval(insertNotifications, 90000);
 
 
 /*Render index.html as homepage*/
@@ -49,10 +68,15 @@ app.get('/',function(req,res){
     res.render('index.html',{title:"Notification System"});
 });
 
+app.get('/notifications/count',function(req,res){
+    getNotificationsCount().then(function(count) {
+        res.send({count: count});
+    });
+});
+
 app.get('/notifications',function(req,res){
     getNotifications().then(function(notifs) {
         res.send(notifs);
     });
 });
-
 

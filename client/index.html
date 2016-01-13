@@ -22,8 +22,10 @@
         </div>
     </form>
     <div class="pull-right user-info">
-        <span class="glyphicon glyphicon-bell gi-l ph-s grey-icon"></span>
-        <span class="notif-count">3</span>
+        <div class="notification notif-hidden" onclick="toggleNotification(event)">
+            <span class="glyphicon glyphicon-bell gi-l ph-s grey-icon"></span>
+            <span class="notif-count hide"></span>
+        </div>
         <span class="glyphicon glyphicon-envelope gi-l ph-s grey-icon"></span>
         <div class="user-desc">
             <img src="./static/img/user.jpg" class="user-img">
@@ -31,28 +33,87 @@
         </div>
     </div>
 </header>
-<div class="notif-container hide">
+<!--<div class="notif-container hide">
 
-</div>
+</div>-->
 </body>
 <script>
-    getNotifications();
+    getNotificationsCount();
     var socket = io.connect();
 
-    socket.on('notification', function (subs) {
+    socket.on('notificationCount', function (notifs) {
         //update the notification count
+        console.info('inside emitted message', notifs);
+        updateNotification(notifs);
     });
 
-    function getNotifications() {
-        $.ajax({url: '/notifications',
-            success: function(notifs){
-                console.info('users : ', users);
+    function getNotificationsCount() {
+        $.ajax({url: '/notifications/count',
+            success: function(count){
+                console.info('in getNotifications : ', count);
                 //update the notification count
+                updateNotification(count);
             },
             error: function(err) {
                 console.info('error : ', err);
             }
         });
+    }
+
+    function getNotifications() {
+        $.ajax({url: '/notifications',
+            success: function(notifs){
+                console.info('in getNotifications : ', notifs);
+                //update the notification count
+                renderNotificationList(notifs);
+            },
+            error: function(err) {
+                console.info('error : ', err);
+            }
+        });
+    }
+
+    function updateNotification(notifs) {
+        if(notifs.count) {
+            var node = document.getElementsByClassName("notif-count")[0];
+            if(notifs.count < 100) {
+                node.innerHTML = notifs.count;
+            } else {
+                node.innerHTML = '99+';
+                node.style.fontSize = '9px';
+                node.style.lineHeight = '20px';
+            }
+            node.className = node.className.replace(/\bhide\b/,'');
+        }
+    }
+
+    function toggleNotification(e) {
+        if(e.currentTarget.classList.contains('notif-hidden')) {
+            getNotifications();
+            //document.getElementsByClassName("notif-container")[0].className = document.getElementsByClassName("notif-container")[0].className.replace(/\bhide\b/,'');
+            e.currentTarget.className = e.currentTarget.className.replace(/\bnotif-hidden\b/,'');
+        } else {
+            document.getElementsByClassName("notif-container")[0].className = document.getElementsByClassName("notif-container")[0].className.replace('', 'hide ');
+            document.getElementsByClassName("notif-container")[0].innerHTML = "";
+            e.currentTarget.className = e.currentTarget.className.replace('','notif-hidden ');
+        }
+    }
+
+    function renderNotificationList(notifs) {
+        var notifDOM = document.getElementsByClassName("notif-container");
+        var parentNode = document.createElement("div");
+        parentNode.className = "notif-container";
+
+        notifs.forEach(function(notif) {
+            var notification = document.createElement("div");
+            notification.className = "notif-desc";
+            notification.innerHTML = notif.desc;
+            parentNode.appendChild(notification);
+        });
+        if(document.getElementsByClassName("notif-container").length) {
+
+        }
+        document.body.appendChild(parentNode);
     }
 
 </script>

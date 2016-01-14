@@ -35,11 +35,12 @@ function getNotifications() {
 }
 
 function insertNotifications() {
-    Notifications.create(data, function(err, docs) {
+    var i = parseInt(Math.random() * data.length);
+    Notifications.create(data[i], function(err, docs) {
         if (err) {
             console.info('Unable to save data : ', err);
         } else {
-            console.info('Notifications were successfully stored: ', docs.length);
+            console.info('Notifications were successfully stored');
         }
     });
 }
@@ -54,27 +55,27 @@ db.connection.on('open', function callback() {
             });
         }
 
-        setInterval(getUnreadNotification,60000);
+        setInterval(getUnreadNotification, 3000);
 
     });
 });
 insertNotifications();
 
-setInterval(insertNotifications, 90000);
+setInterval(insertNotifications, 10000);
 
 
 /*Render index.html as homepage*/
-app.get('/',function(req,res){
+app.get('/',function(req,res) {
     res.render('index.html',{title:"Notification System"});
 });
 
-app.get('/notifications/count',function(req,res){
+app.get('/notifications/count',function(req,res) {
     getNotificationsCount().then(function(count) {
         res.send({count: count});
     });
 });
 
-app.get('/notifications',function(req,res){
+app.get('/notifications',function(req,res) {
     getNotifications().then(function(notifs) {
         res.send(notifs);
     });

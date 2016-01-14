@@ -13,6 +13,9 @@
 .pa-l {
     padding: 20px;
 }
+.pa-s {
+    padding: 10px;
+}
 .background {
     background-image: url("../img/bg.jpg");
     position:fixed;
@@ -31,13 +34,10 @@
 .notification {
     display: inline-block;
 }
-.notif-count {
+.tag {
     display: inline-block;
     height: 22px;
     width: 22px;
-    position: absolute;
-    top: 20px;
-    left: 37px;
     border: 1px solid #fff;
     background-color: #15B5B6;
     border-radius: 50%;
@@ -46,6 +46,11 @@
     line-height: 19px;
     font-weight: bold;
     color: white;
+}
+.notif-count {
+    position: absolute;
+    top: 20px;
+    left: 37px;
 }
 .main-header {
     overflow: auto;
@@ -97,21 +102,72 @@
     border-radius: 35px;
 }
 .notif-container {
-    box-shadow: 5px 5px 19px #888888;
-    right: 326px;
-    top: 80px;
+    right: 88px;
+    opacity: 0;
+    top: -1000px;
     position: absolute;
-    height: 600px;
-    width: 350px;
-    background-color: lightgrey;
-    overflow: scroll;
+    width: 300px;
+    background-color: white;
+    border-radius: 8px;
+    padding-bottom: 10px;
+    -webkit-transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    -moz-transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    -ms-transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    -o-transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 .notif-container:before {
-    content:"\A";
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-bottom: 15px solid lightgrey;
+    content: "";
+    border: 15px solid white;
+    transform: rotateZ(45deg) translateX(-6px) translateY(-10px);
+    border-radius: 7px;
+    width: 0;
     position: absolute;
-    left: 60px;
-    top: -15px;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+.notif-container .header {
+    color: #636e7a;
+    font-size: 18px;
+    text-align: center;
+    font-weight: 500;
+}
+.notif-container .main-count {
+    height: 26px;
+    width: 26px;
+    font-size: 15px;
+    line-height: 23px;
+}
+
+.notif-container .list {
+    background-color: #e4ebee;
+    max-height: 272px;
+    overflow: scroll;
+}
+.notif-container .list .list-item {
+    border-top: 2px solid #cad6dd;
+    min-height: 90px;
+}
+.notif-container .list .list-item:last-child {
+    border-bottom: 2px solid #cad6dd;
+}
+.list-item .content {
+    color: #85909b;
+    padding-left: 68px;
+    font-size: 15px;
+    line-height: 23px;
+}
+.list-item .content span {
+    color: #66707d;
+    font-weight: 500;
+}
+.list-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+.notif-container.open {
+    top: 100px;
+    opacity: 1;
 }

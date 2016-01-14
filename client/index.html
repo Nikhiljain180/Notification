@@ -19,15 +19,15 @@
         <div class="form-group">
             <div class="col-xs-12">
                 <span class="glyphicon glyphicon-search text-search grey-icon"></span>
-                <input type="text" class="form-control" id="search-term">
+                <input type="text" class="form-control" id="search-term"/>
             </div>
         </div>
     </form>
     <div class="pull-right user-info">
         <div class="pull-left">
-            <div class="notification notif-hidden pa-l" onclick="toggleNotification(event)">
+            <div class="notification notif-hidden pa-l" onclick="notification.togglePanel(event)">
                 <span class="bell-icon fa fa-bell-o grey-icon"></span>
-                <span class="notif-count hide"></span>
+                <span class="notif-count tag">3</span> <!-- Add hide class to hide it -->
             </div>
             <span class="mail-icon fa fa-envelope-o pa-l grey-icon"></span>
         </div>
@@ -37,88 +37,124 @@
         </div>
     </div>
 </header>
-<!--<div class="notif-container hide">
-
-</div>-->
+<div class="notif-container">
+    <div class="header pa-l">
+        <span>Notifications</span>
+        <span class="main-count tag">3</span>
+    </div>
+    <div class="list">
+        <div class="list-item pa-l">
+            <img class="pull-left" src="static/img/p1.jpg" alt="">
+            <div class="content"><span>Erod Klein</span> posted a photo on your wall.</div>
+        </div>
+        <div class="list-item pa-l">
+            <img class="pull-left" src="static/img/p2.jpg" alt="">
+            <div class="content"><span>Alsad Kozar</span> commented on your last video.</div>
+        </div>
+        <div class="list-item pa-l">
+            <img class="pull-left" src="static/img/p3.jpeg" alt="">
+            <div class="content"><span>Tupac Shakur</span> posted 2 comments on your photo.</div>
+        </div>
+        <div class="list-item pa-l">
+            <img class="pull-left" src="static/img/p1.jpg" alt="">
+            <div class="content"><span>Erod Klein</span> posted a photo on your wall.</div>
+        </div>
+        <div class="list-item pa-l">
+            <img class="pull-left" src="static/img/p2.jpg" alt="">
+            <div class="content"><span>Alsad Kozar</span> commented on your last video.</div>
+        </div>
+        <div class="list-item pa-l">
+            <img class="pull-left" src="static/img/p3.jpeg" alt="">
+            <div class="content"><span>Tupac Shakur</span> posted 2 comments on your photo.</div>
+        </div>
+    </div>
+</div>
 </body>
 <script>
-    getNotificationsCount();
-    var socket = io.connect();
 
-    socket.on('notificationCount', function (notifs) {
-        //update the notification count
-        console.info('inside emitted message', notifs);
-        updateNotification(notifs);
-    });
-
-    function getNotificationsCount() {
-        $.ajax({url: '/notifications/count',
-            success: function(count){
-                console.info('in getNotifications : ', count);
-                //update the notification count
-                updateNotification(count);
-            },
-            error: function(err) {
-                console.info('error : ', err);
+    var notification = {
+        getCount: function () {
+            $.ajax({
+                url: '/notifications/count',
+                success: function(count){
+                    console.info('In getNotificationCount : ', count);
+                    //update the notification count
+                    notification.update(count);
+                },
+                error: function(err) {
+                    console.info('error : ', err);
+                }
+            });
+        },
+        get: function () {
+            $.ajax({url: '/notifications',
+                success: function(notifs){
+                    console.info('in getNotifications : ', notifs);
+                    //update the notification count
+                    notification.renderList(notifs);
+                },
+                error: function(err) {
+                    console.info('error : ', err);
+                }
+            });
+        },
+        update: function (notifs) {
+            if(notifs.count) {
+                var node = document.getElementsByClassName('notif-count')[0];
+                if(notifs.count < 100) {
+                    node.innerHTML = notifs.count;
+                } else {
+                    node.innerHTML = '99+';
+                    node.style.fontSize = '9px';
+                    node.style.lineHeight = '20px';
+                }
+                node.className = node.className.replace(/\bhide\b/,'');
             }
-        });
-    }
+        },
+        init: function () {
+            var socket;
 
-    function getNotifications() {
-        $.ajax({url: '/notifications',
-            success: function(notifs){
-                console.info('in getNotifications : ', notifs);
+            notification.getCount();
+
+            socket = io.connect();
+            socket.on('notificationCount', function (count) {
                 //update the notification count
-                renderNotificationList(notifs);
-            },
-            error: function(err) {
-                console.info('error : ', err);
-            }
-        });
-    }
-
-    function updateNotification(notifs) {
-        if(notifs.count) {
-            var node = document.getElementsByClassName("notif-count")[0];
-            if(notifs.count < 100) {
-                node.innerHTML = notifs.count;
+                console.info('inside emitted message', count);
+                notification.update(count);
+            });
+        },
+        togglePanel: function (e) {
+            /*if(e.currentTarget.classList.contains('notif-hidden')) {
+                notification.get();
+                //document.getElementsByClassName("notif-container")[0].className = document.getElementsByClassName("notif-container")[0].className.replace(/\bhide\b/,'');
+                e.currentTarget.className = e.currentTarget.className.replace(/\bnotif-hidden\b/,'');
             } else {
-                node.innerHTML = '99+';
-                node.style.fontSize = '9px';
-                node.style.lineHeight = '20px';
+                document.getElementsByClassName("notif-container")[0].className = document.getElementsByClassName("notif-container")[0].className.replace('', 'hide ');
+                document.getElementsByClassName("notif-container")[0].innerHTML = "";
+                e.currentTarget.className = e.currentTarget.className.replace('','notif-hidden ');
+            }*/
+            $('.notif-container').toggleClass('open');
+        },
+        renderList: function (notifs) {
+            var notifDOM = document.getElementsByClassName("notif-container");
+            var parentNode = document.createElement("div");
+            parentNode.className = "notif-container";
+
+            notifs.forEach(function(notif) {
+                var notification = document.createElement("div");
+                notification.className = "notif-desc";
+                notification.innerHTML = notif.desc;
+                parentNode.appendChild(notification);
+            });
+            if(document.getElementsByClassName("notif-container").length) {
+
             }
-            node.className = node.className.replace(/\bhide\b/,'');
+            document.body.appendChild(parentNode);
         }
-    }
+    };
 
-    function toggleNotification(e) {
-        if(e.currentTarget.classList.contains('notif-hidden')) {
-            getNotifications();
-            //document.getElementsByClassName("notif-container")[0].className = document.getElementsByClassName("notif-container")[0].className.replace(/\bhide\b/,'');
-            e.currentTarget.className = e.currentTarget.className.replace(/\bnotif-hidden\b/,'');
-        } else {
-            document.getElementsByClassName("notif-container")[0].className = document.getElementsByClassName("notif-container")[0].className.replace('', 'hide ');
-            document.getElementsByClassName("notif-container")[0].innerHTML = "";
-            e.currentTarget.className = e.currentTarget.className.replace('','notif-hidden ');
-        }
-    }
-
-    function renderNotificationList(notifs) {
-        var notifDOM = document.getElementsByClassName("notif-container");
-        var parentNode = document.createElement("div");
-        parentNode.className = "notif-container";
-
-        notifs.forEach(function(notif) {
-            var notification = document.createElement("div");
-            notification.className = "notif-desc";
-            notification.innerHTML = notif.desc;
-            parentNode.appendChild(notification);
-        });
-        if(document.getElementsByClassName("notif-container").length) {
-
-        }
-        document.body.appendChild(parentNode);
-    }
+    //Uncomment it for real data
+    //notification.init();
 
 </script>
 </html>

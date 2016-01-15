@@ -6,7 +6,11 @@ var mongoose = require('mongoose'),
     io = require('socket.io'),
     data = require('./server/data/notifications.json'),
     notification = require('./server/models/notification.server.model'),
-    Notifications = mongoose.model('Notifications');
+    Notifications = mongoose.model('Notifications'),
+    users = require('./server/models/user.server.model'),
+    Users = mongoose.model('Users');
+
+var unreadNotifications = [];
 
 /**
  * Main application entry file.
@@ -31,7 +35,7 @@ function getNotificationsCount() {
 }
 
 function getNotifications() {
-    return Notifications.find({read: false}).exec();
+    return Notifications.find({read: false}).populate('user').exec();
 }
 
 function insertNotifications() {
@@ -55,13 +59,13 @@ db.connection.on('open', function callback() {
             });
         }
 
-        setInterval(getUnreadNotification, 3000);
+        setInterval(getUnreadNotification, 30000);
 
     });
 });
 insertNotifications();
 
-setInterval(insertNotifications, 10000);
+//setInterval(insertNotifications, 10000);
 
 
 /*Render index.html as homepage*/
@@ -77,7 +81,20 @@ app.get('/notifications/count',function(req,res) {
 
 app.get('/notifications',function(req,res) {
     getNotifications().then(function(notifs) {
+        unreadNotifications = notifs;
         res.send(notifs);
     });
+});
+
+app.get('/notifications/read', function(req, res) {
+    var notifIdList = unreadNotifications.map(function(notif) {
+        return notif._id;
+    });
+    Notifications.update(
+        {_id: {$in : notifIdList}},
+        {$set: {read: true}}
+    ).exec().then(function(result) {
+            res.send(result)
+        });
 });
 

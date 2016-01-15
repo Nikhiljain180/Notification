@@ -47,7 +47,7 @@
     font-weight: bold;
     color: white;
 }
-.notif-count {
+.main-count {
     position: absolute;
     top: 20px;
     left: 37px;
@@ -81,7 +81,7 @@
 .mail-icon {
     font-size: 36px;
 }
-.glyphicon, .notif-count {
+.glyphicon, .main-count {
     cursor: pointer;
     vertical-align: middle;
 }
@@ -104,6 +104,7 @@
 .notif-container {
     right: 88px;
     opacity: 0;
+    max-height:500px;
     top: -1000px;
     position: absolute;
     width: 300px;
@@ -123,8 +124,8 @@
     border-radius: 7px;
     width: 0;
     position: absolute;
-    left: 0;
     right: 0;
+    left:0;
     margin: auto;
 }
 .notif-container .header {
@@ -134,6 +135,13 @@
     font-weight: 500;
 }
 .notif-container .main-count {
+    left: 212px;
+}
+.notif-container .list-item {
+    background-color: #E9EFF2;
+    border-bottom: 1px solid lightgrey;
+}
+.main-count {
     height: 26px;
     width: 26px;
     font-size: 15px;
@@ -143,7 +151,7 @@
 .notif-container .list {
     background-color: #e4ebee;
     max-height: 272px;
-    overflow: scroll;
+    overflow-y: auto;
 }
 .notif-container .list .list-item {
     border-top: 2px solid #cad6dd;
@@ -160,7 +168,7 @@
 }
 .list-item .content span {
     color: #66707d;
-    font-weight: 500;
+    font-weight: 700;
 }
 .list-item img {
     width: 50px;

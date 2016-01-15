@@ -27,7 +27,7 @@
         <div class="pull-left">
             <div class="notification notif-hidden pa-l" onclick="notification.togglePanel(event)">
                 <span class="bell-icon fa fa-bell-o grey-icon"></span>
-                <span class="notif-count tag">3</span> <!-- Add hide class to hide it -->
+                <span class="main-count tag hide"></span> <!-- Add hide class to hide it -->
             </div>
             <span class="mail-icon fa fa-envelope-o pa-l grey-icon"></span>
         </div>
@@ -40,33 +40,10 @@
 <div class="notif-container">
     <div class="header pa-l">
         <span>Notifications</span>
-        <span class="main-count tag">3</span>
+        <span class="main-count tag"></span>
     </div>
     <div class="list">
-        <div class="list-item pa-l">
-            <img class="pull-left" src="static/img/p1.jpg" alt="">
-            <div class="content"><span>Erod Klein</span> posted a photo on your wall.</div>
-        </div>
-        <div class="list-item pa-l">
-            <img class="pull-left" src="static/img/p2.jpg" alt="">
-            <div class="content"><span>Alsad Kozar</span> commented on your last video.</div>
-        </div>
-        <div class="list-item pa-l">
-            <img class="pull-left" src="static/img/p3.jpeg" alt="">
-            <div class="content"><span>Tupac Shakur</span> posted 2 comments on your photo.</div>
-        </div>
-        <div class="list-item pa-l">
-            <img class="pull-left" src="static/img/p1.jpg" alt="">
-            <div class="content"><span>Erod Klein</span> posted a photo on your wall.</div>
-        </div>
-        <div class="list-item pa-l">
-            <img class="pull-left" src="static/img/p2.jpg" alt="">
-            <div class="content"><span>Alsad Kozar</span> commented on your last video.</div>
-        </div>
-        <div class="list-item pa-l">
-            <img class="pull-left" src="static/img/p3.jpeg" alt="">
-            <div class="content"><span>Tupac Shakur</span> posted 2 comments on your photo.</div>
-        </div>
+
     </div>
 </div>
 </body>
@@ -77,7 +54,6 @@
             $.ajax({
                 url: '/notifications/count',
                 success: function(count){
-                    console.info('In getNotificationCount : ', count);
                     //update the notification count
                     notification.update(count);
                 },
@@ -89,7 +65,7 @@
         get: function () {
             $.ajax({url: '/notifications',
                 success: function(notifs){
-                    console.info('in getNotifications : ', notifs);
+                    notification.markAsRead(notifs);
                     //update the notification count
                     notification.renderList(notifs);
                 },
@@ -98,17 +74,35 @@
                 }
             });
         },
-        update: function (notifs) {
-            if(notifs.count) {
-                var node = document.getElementsByClassName('notif-count')[0];
-                if(notifs.count < 100) {
-                    node.innerHTML = notifs.count;
-                } else {
-                    node.innerHTML = '99+';
-                    node.style.fontSize = '9px';
-                    node.style.lineHeight = '20px';
+        markAsRead: function(notifs) {
+            $.ajax({
+                url: '/notifications/read',
+                success: function(count){
+                    //update the notification count
+                    notification.update(count);
+                },
+                error: function(err) {
+                    console.info('error : ', err);
                 }
-                node.className = node.className.replace(/\bhide\b/,'');
+            });
+        },
+        update: function (notifs) {
+            if(notifs.count > 0 && !$('.notif-container').hasClass('open')) {
+                $('.notification .main-count').removeClass('hide');
+                var node = document.getElementsByClassName('main-count');
+                console.info(node);
+                if(notifs.count < 100) {
+                    for(var i = 0; i < node.length; i++) {
+                        node[i].innerHTML = notifs.count;
+                    }
+
+                } else if(notifs.count > 0) {
+                    for(var i = 0; i < node.length; i++) {
+                        node[i].innerHTML = '99+';
+                        node[i].style.fontSize = '9px';
+                        node[i].style.lineHeight = '20px';
+                    }
+                }
             }
         },
         init: function () {
@@ -119,42 +113,45 @@
             socket = io.connect();
             socket.on('notificationCount', function (count) {
                 //update the notification count
-                console.info('inside emitted message', count);
                 notification.update(count);
+                //notification.get();
             });
         },
         togglePanel: function (e) {
-            /*if(e.currentTarget.classList.contains('notif-hidden')) {
-                notification.get();
-                //document.getElementsByClassName("notif-container")[0].className = document.getElementsByClassName("notif-container")[0].className.replace(/\bhide\b/,'');
-                e.currentTarget.className = e.currentTarget.className.replace(/\bnotif-hidden\b/,'');
-            } else {
-                document.getElementsByClassName("notif-container")[0].className = document.getElementsByClassName("notif-container")[0].className.replace('', 'hide ');
-                document.getElementsByClassName("notif-container")[0].innerHTML = "";
-                e.currentTarget.className = e.currentTarget.className.replace('','notif-hidden ');
-            }*/
+            this.get();
             $('.notif-container').toggleClass('open');
+            $('.notification .main-count').toggleClass('hide');
         },
         renderList: function (notifs) {
-            var notifDOM = document.getElementsByClassName("notif-container");
-            var parentNode = document.createElement("div");
-            parentNode.className = "notif-container";
+            $('.notification .main-count').addClass('hide');
+            var notifDOM = document.getElementsByClassName("list")[0];
 
             notifs.forEach(function(notif) {
-                var notification = document.createElement("div");
-                notification.className = "notif-desc";
-                notification.innerHTML = notif.desc;
-                parentNode.appendChild(notification);
-            });
-            if(document.getElementsByClassName("notif-container").length) {
+                var listNode = document.createElement("div");
+                listNode.className = "list-item pa-l";
+                var userImg = document.createElement("img");
+                userImg.className = "pull-left";
+                userImg.src = "static/img/"+ notif.user.imgName;
+                var contentDiv = document.createElement("div");
+                contentDiv.className = "content";
+                contentDiv.innerHTML = '<span>'+ notif.user.firstName + ' </span>' + notif.desc;
+                listNode.appendChild(userImg);
+                listNode.appendChild(contentDiv);
 
-            }
-            document.body.appendChild(parentNode);
+                notifDOM.insertBefore(listNode, notifDOM.childNodes[1]);
+            });
         }
     };
 
-    //Uncomment it for real data
-    //notification.init();
+    notification.init();
+
+    $(document).click(function(){
+        $(".notif-container").removeClass("open");
+    });
+
+    $(".notification, .notif-container").click(function(e){
+        e.stopPropagation();
+    });
 
 </script>
 </html>

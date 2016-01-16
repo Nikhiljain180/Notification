@@ -175,6 +175,9 @@
     height: 50px;
     border-radius: 50%;
 }
+.list-item.read {
+    background-color: #FEFFF2;
+}
 .notif-container.open {
     top: 100px;
     opacity: 1;

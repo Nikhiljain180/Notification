@@ -125,6 +125,7 @@
         renderList: function (notifs) {
             $('.notification .main-count').addClass('hide');
             var notifDOM = document.getElementsByClassName("list")[0];
+            $('.list-item').addClass('read');
 
             notifs.forEach(function(notif) {
                 var listNode = document.createElement("div");

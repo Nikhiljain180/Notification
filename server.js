@@ -38,35 +38,31 @@ function getNotifications() {
     return Notifications.find({read: false}).populate('user').exec();
 }
 
-function insertNotifications() {
-    var i = parseInt(Math.random() * data.length);
-    Notifications.create(data[i], function(err, docs) {
-        if (err) {
-            console.info('Unable to save data : ', err);
-        } else {
-            console.info('Notifications were successfully stored');
-        }
-    });
-}
-
 var db = mongoose.connect(dbConfig.uri);
 db.connection.on('open', function callback() {
     io.sockets.on('connection', function (socket) {
+
+        insertNotifications();
+        setInterval(insertNotifications, 10000);
+
+        function insertNotifications() {
+            var i = parseInt(Math.random() * data.length);
+            Notifications.create(data[i], function(err, docs) {
+                if (err) {
+                    console.info('Unable to save data : ', err);
+                } else {
+                    getUnreadNotification();
+                }
+            });
+        }
 
         function getUnreadNotification() {
             getNotificationsCount().then(function(count) {
                 socket.emit('notificationCount', {count : count});
             });
         }
-
-        setInterval(getUnreadNotification, 30000);
-
     });
 });
-insertNotifications();
-
-//setInterval(insertNotifications, 10000);
-
 
 /*Render index.html as homepage*/
 app.get('/',function(req,res) {
@@ -90,9 +86,11 @@ app.get('/notifications/read', function(req, res) {
     var notifIdList = unreadNotifications.map(function(notif) {
         return notif._id;
     });
+    console.info("notifIdList : ", notifIdList)
     Notifications.update(
         {_id: {$in : notifIdList}},
-        {$set: {read: true}}
+        {$set: {read: true}},
+        {multi: true}
     ).exec().then(function(result) {
             res.send(result)
         });

@@ -11,7 +11,15 @@ var notificationSchema = new Schema({
         ref: 'Users'
     },
     desc     : String,
-    read: Boolean
+    read: Boolean,
+    createdTimestamp: {
+        type: Date,
+        default: Date.now()
+    },
+    updatedTimestamp: {
+        type: Date,
+        default: Date.now()
+    }
 });
 
 mongoose.model('Notifications', notificationSchema, 'Notifications');

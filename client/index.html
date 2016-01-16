@@ -125,6 +125,7 @@
         renderList: function (notifs) {
             $('.notification .main-count').addClass('hide');
             var notifDOM = document.getElementsByClassName("list")[0];
+            notification.removeOldList(notifDOM, notifs.length);
             $('.list-item').addClass('read');
 
             notifs.forEach(function(notif) {
@@ -141,6 +142,15 @@
 
                 notifDOM.insertBefore(listNode, notifDOM.childNodes[1]);
             });
+        },
+        removeOldList: function(notifDOM, newNotifsLen) {
+            if(notifDOM.children.length + newNotifsLen > 10) {
+                if(newNotifsLen > 10) {
+                    $(notifDOM).find(".list-item").slice(0).remove();
+                } else {
+                    $(notifDOM).find(".list-item").slice(10-newNotifsLen).remove();
+                }
+            }
         }
     };
 
@@ -152,6 +162,13 @@
 
     $(".notification, .notif-container").click(function(e){
         e.stopPropagation();
+    });
+
+    $(".list").scroll(function () {
+        var list = $(".list");
+        /*if ($(document).height() <= list.scrollTop() + list.height()) {
+            alert("End Of The Page");
+        }*/
     });
 
 </script>

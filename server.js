@@ -86,10 +86,9 @@ app.get('/notifications/read', function(req, res) {
     var notifIdList = unreadNotifications.map(function(notif) {
         return notif._id;
     });
-    console.info("notifIdList : ", notifIdList)
     Notifications.update(
         {_id: {$in : notifIdList}},
-        {$set: {read: true}},
+        {$set: {read: true, updatedTimestamp: Date.now()}},
         {multi: true}
     ).exec().then(function(result) {
             res.send(result)

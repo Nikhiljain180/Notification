@@ -34,8 +34,12 @@ function getNotificationsCount() {
     return Notifications.count({read:false}).exec();
 }
 
-function getNotifications() {
-    return Notifications.find({read: false}).populate('user').exec();
+function getNotifications(date) {
+    if(date) {
+        return Notifications.find({"createdTimestamp": {$lt: date}}).sort('-createdTimestamp').limit(10).populate('user').exec();
+    } else {
+        return Notifications.find({read: false}).sort('-createdTimestamp').limit(10).populate('user').exec();
+    }
 }
 
 var db = mongoose.connect(dbConfig.uri);
@@ -76,13 +80,16 @@ app.get('/notifications/count',function(req,res) {
 });
 
 app.get('/notifications',function(req,res) {
-    getNotifications().then(function(notifs) {
+    console.info(req.data);
+    console.info(req.query);
+    var date = req.query.date;
+    getNotifications(date).then(function(notifs) {
         unreadNotifications = notifs;
         res.send(notifs);
     });
 });
 
-app.get('/notifications/read', function(req, res) {
+app.put('/notifications/mark/read', function(req, res) {
     var notifIdList = unreadNotifications.map(function(notif) {
         return notif._id;
     });

@@ -182,3 +182,13 @@
     top: 100px;
     opacity: 1;
 }
+.list .notif-time {
+    color: #9d9d9d;
+    font-size: 10px;
+    display: inline-block;
+    float: right;
+}
+.loader {
+    margin-top: 5px;
+    margin-left: 30%;
+}

@@ -45,6 +45,9 @@
     <div class="list">
 
     </div>
+    <div class="loader hide">
+        <img src="static/img/horizontalLoader.gif">
+    </div>
 </div>
 </body>
 <script>
@@ -62,8 +65,12 @@
                 }
             });
         },
-        get: function () {
+        get: function (dateTimestamp) {
+            $('.loader').removeClass('hide');
             $.ajax({url: '/notifications',
+                data:{
+                    date: dateTimestamp?dateTimestamp:undefined
+                },
                 success: function(notifs){
                     notification.markAsRead(notifs);
                     //update the notification count
@@ -71,12 +78,16 @@
                 },
                 error: function(err) {
                     console.info('error : ', err);
+                },
+                complete: function(){
+                    $('.loader').addClass('hide');
                 }
             });
         },
         markAsRead: function(notifs) {
             $.ajax({
-                url: '/notifications/read',
+                url: '/notifications/mark/read',
+                type: 'PUT',
                 success: function(count){
                     //update the notification count
                     notification.update(count);
@@ -114,34 +125,51 @@
             socket.on('notificationCount', function (count) {
                 //update the notification count
                 notification.update(count);
-                //notification.get();
+                if($('.notif-container').hasClass('open')) {
+                    notification.get();
+                }
             });
         },
         togglePanel: function (e) {
-            this.get();
+            if(!$('.notif-container').hasClass('open')) {
+                notification.get();
+            }
+            //$('.list-item').addClass('read');
             $('.notif-container').toggleClass('open');
             $('.notification .main-count').toggleClass('hide');
         },
         renderList: function (notifs) {
             $('.notification .main-count').addClass('hide');
             var notifDOM = document.getElementsByClassName("list")[0];
-            notification.removeOldList(notifDOM, notifs.length);
-            $('.list-item').addClass('read');
+            if(notifs.length) {
+                $('.notif-container .main-count').removeClass('hide');
+                notification.removeOldList(notifDOM, notifs.length);
+                $('.list-item').addClass('read');
 
-            notifs.forEach(function(notif) {
-                var listNode = document.createElement("div");
-                listNode.className = "list-item pa-l";
-                var userImg = document.createElement("img");
-                userImg.className = "pull-left";
-                userImg.src = "static/img/"+ notif.user.imgName;
-                var contentDiv = document.createElement("div");
-                contentDiv.className = "content";
-                contentDiv.innerHTML = '<span>'+ notif.user.firstName + ' </span>' + notif.desc;
-                listNode.appendChild(userImg);
-                listNode.appendChild(contentDiv);
+                notifs.forEach(function(notif) {
+                    var notifTime = notification.formatDatetime(notif.createdTimestamp);
+                    var listNode = document.createElement("div");
+                    listNode.setAttribute('data-date', notif.createdTimestamp);
+                    listNode.className = "list-item pa-l";
+                    var userImg = document.createElement("img");
+                    userImg.className = "pull-left";
+                    userImg.src = "static/img/"+ notif.user.imgName;
+                    var contentDiv = document.createElement("div");
+                    contentDiv.className = "content";
+                    contentDiv.innerHTML = '<span>'+ notif.user.firstName + ' </span>' + notif.desc;
+                    var timeDiv = document.createElement("div");
+                    timeDiv.className = "notif-time";
+                    timeDiv.innerText = notifTime;
+                    listNode.appendChild(userImg);
+                    listNode.appendChild(contentDiv);
+                    listNode.appendChild(timeDiv);
 
-                notifDOM.insertBefore(listNode, notifDOM.childNodes[1]);
-            });
+                    notifDOM.insertBefore(listNode, notifDOM.childNodes[1]);
+                });
+            } else {
+                $('.list-item').addClass('read');
+                $('.notif-container .main-count').addClass('hide');
+            }
         },
         removeOldList: function(notifDOM, newNotifsLen) {
             if(notifDOM.children.length + newNotifsLen > 10) {
@@ -151,6 +179,21 @@
                     $(notifDOM).find(".list-item").slice(10-newNotifsLen).remove();
                 }
             }
+        },
+        formatDatetime : function(dateTime)  {
+            var date= new Date(dateTime);
+            var year = date.getFullYear(),
+                    month = date.getMonth() + 1, // months are zero indexed
+                    day = date.getDate(),
+                    hour = date.getHours(),
+                    minute = date.getMinutes(),
+                    second = date.getSeconds(),
+                    hourFormatted = hour % 12 || 12, // hour returned in 24 hour format
+                    minuteFormatted = minute < 10 ? "0" + minute : minute,
+                    morning = hour < 12 ? "am" : "pm";
+
+            return month + "/" + day + "/" + year + " " + hourFormatted + ":" +
+                    minuteFormatted + morning;
         }
     };
 
@@ -164,11 +207,10 @@
         e.stopPropagation();
     });
 
-    $(".list").scroll(function () {
-        var list = $(".list");
-        /*if ($(document).height() <= list.scrollTop() + list.height()) {
-            alert("End Of The Page");
-        }*/
+    $(".list").scroll( function() {
+        if($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
+            notification.get($(this).find(".list-item").last().attr("data-date"));
+        }
     });
 
 </script>

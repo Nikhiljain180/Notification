@@ -3,13 +3,13 @@
  */
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+	Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-    username     : String,
-    firstName : String,
-    lastName: String,
-    imgName: String
+	'username': String,
+	'firstName': String,
+	'lastName': String,
+	'imgName': String
 });
 
 mongoose.model('Users', userSchema, 'Users');

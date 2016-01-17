@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Real time notification system using Socket.io and ExpressJS",
   "scripts": {
-    "start": "node ./server/server.js"
+    "start": "node ./server"
   },
   "author": "Neha Sharma",
   "license": "MIT LICENSE",

@@ -12,7 +12,7 @@ var notification = {
         });
     },
     get: function (dateTimestamp) {
-        $('.loader').removeClass('hide');
+        $('.loader-container').removeClass('hide');
         $.ajax({url: '/notifications',
             data:{
                 date: dateTimestamp?dateTimestamp:undefined
@@ -26,7 +26,7 @@ var notification = {
                 console.info('error : ', err);
             },
             complete: function(){
-                $('.loader').addClass('hide');
+                $('.loader-container').addClass('hide');
             }
         });
     },
@@ -45,7 +45,7 @@ var notification = {
     },
     update: function (notifs) {
         if(notifs.count > 0 && !$('.notif-container').hasClass('open')) {
-            $('.notification .main-count').removeClass('hide');
+            $('.notification .main-count').removeClass('hide-element');
             var node = document.getElementsByClassName('main-count');
             console.info(node);
             if(notifs.count < 100) {
@@ -79,17 +79,19 @@ var notification = {
     togglePanel: function (e) {
         if(!$('.notif-container').hasClass('open')) {
             notification.get();
+        } else {
+            $('.notification .main-count').removeClass('hide-element');
         }
         //$('.list-item').addClass('read');
         $('.notif-container').toggleClass('open');
-        $('.notification .main-count').toggleClass('hide');
+        //$('.notification .main-count').toggleClass('hide-element');
     },
     renderList: function (notifs) {
-        $('.notification .main-count').addClass('hide');
+        $('.notification .main-count').addClass('hide-element');
         var notifDOM = document.getElementsByClassName("list")[0];
         if(notifs.length) {
-            $('.notif-container .main-count').removeClass('hide');
-            notification.removeOldList(notifDOM, notifs.length);
+            $('.notif-container .main-count').removeClass('hide-element');
+            //notification.removeOldList(notifDOM, notifs.length);
             $('.list-item').addClass('read');
 
             notifs.forEach(function(notif) {
@@ -114,7 +116,7 @@ var notification = {
             });
         } else {
             $('.list-item').addClass('read');
-            $('.notif-container .main-count').addClass('hide');
+            $('.notif-container .main-count').addClass('hide-element');
         }
     },
     removeOldList: function(notifDOM, newNotifsLen) {
@@ -155,7 +157,8 @@ $(document).ready(function() {
     });
 
     $(".list").scroll( function() {
-        if($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
+        console.log($(this)[0].scrollHeight - $(this).scrollTop() + ' == ' + $(this).innerHeight());
+        if($(this)[0].scrollHeight - $(this).scrollTop() == $(this).innerHeight()) {
             notification.get($(this).find(".list-item").last().attr("data-date"));
         }
     });

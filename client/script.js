@@ -19,6 +19,7 @@ var notification = {
                 date: dateTimestamp ? dateTimestamp : undefined
             },
             success: function (notifs) {
+                notification.markAsRead();
                 //update the notification count
                 notification.renderList(notifs);
             },
@@ -83,7 +84,6 @@ var notification = {
             notification.get();
         } else {
             notification.update(0);
-            notification.markAsRead();
             //$('.notification .main-count').removeClass('hide-element');
         }
         $('.notif-container').toggleClass('open');

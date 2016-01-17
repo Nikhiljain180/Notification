@@ -15,10 +15,6 @@ var notificationSchema = new Schema({
     createdTimestamp: {
         type: Date,
         default: Date.now()
-    },
-    updatedTimestamp: {
-        type: Date,
-        default: Date.now()
     }
 });
 

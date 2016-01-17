@@ -19,7 +19,6 @@ var notification = {
                 date: dateTimestamp ? dateTimestamp : undefined
             },
             success: function (notifs) {
-                notification.markAsRead(notifs);
                 //update the notification count
                 notification.renderList(notifs);
             },
@@ -45,7 +44,7 @@ var notification = {
         });
     },
     update: function (count) {
-        if (count > 0 && !$('.notif-container').hasClass('open')) {
+        if (count > 0/* && !$('.notif-container').hasClass('open')*/) {
             $('.notification .main-count').removeClass('hide-element');
             var node = document.getElementsByClassName('main-count');
             console.info(node);
@@ -63,7 +62,7 @@ var notification = {
         }
 
         if(count <= 0) {
-            $('.notification .main-count').addClass('hide-element');
+            $('.main-count').addClass('hide-element');
         }
     },
     init: function () {
@@ -83,7 +82,9 @@ var notification = {
         if (!$('.notif-container').hasClass('open')) {
             notification.get();
         } else {
-            $('.notification .main-count').removeClass('hide-element');
+            notification.update(0);
+            notification.markAsRead();
+            //$('.notification .main-count').removeClass('hide-element');
         }
         $('.notif-container').toggleClass('open');
     },

@@ -1,3 +1,8 @@
+/**
+ * Notification specific API
+ *
+ */
+
 'use strict';
 
 var unreadNotifications = [];
@@ -8,12 +13,15 @@ var mongoose = require('mongoose'),
 var notificationController = require('./../controllers/notification-controllers');
 
 module.exports = function(app) {
+
+	/* The API gets the count of all the newly added / unread notification */
 	app.get('/notifications/count', function(req, res) {
 		notificationController.getNotificationsCount().then(function(count) {
 			res.send({'count': count});
 		});
 	});
 
+	/* The API gets the notification details for either next 10 notifications or all unread notifications*/
 	app.get('/notifications', function(req, res) {
 		var date = req.query.date;
 		notificationController.getNotifications(date).then(function(notifs) {
@@ -22,13 +30,14 @@ module.exports = function(app) {
 		});
 	});
 
+	/* The API marks all the notifications as 'read' after the user views the notification drop down */
 	app.put('/notifications/mark/read', function(req, res) {
 		var notifIdList = unreadNotifications.map(function(notif) {
 			return notif._id;
 		});
 		Notifications.update(
 			{'_id': {'$in': notifIdList}},
-			{'$set': {'read': true, 'updatedTimestamp': Date.now()}},
+			{'$set': {'read': true}},
 			{'multi': true}
 		).exec().then(function(result) {
 			res.send(result);

@@ -23,7 +23,6 @@
 		"dot-notation": [2],
 		"eol-last": [2],
 		"eqeqeq": [2],
-		"indent": [2, "tab", {"SwitchCase": 1, "VariableDeclarator": { "var": 1, "let": 1, "const": 2}}],
 		"key-spacing": [2, {"beforeColon": false, "afterColon": true}],
 		"linebreak-style": [2, "unix"],
 		"max-depth": [2, 5],

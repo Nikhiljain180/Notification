@@ -5,9 +5,6 @@ var gulp = require('gulp'),
 	eslint = require('gulp-eslint');
 
 function isESLintFixedApplied(file) {
-
-	//console.info('file', file);
-
 	return file.eslint !== null && file.eslint.fixed;
 }
 

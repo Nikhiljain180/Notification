@@ -3,10 +3,12 @@
 var mongoose = require('mongoose'),
 	Notifications = mongoose.model('Notifications');
 
+/* Queries the db to fetch the count of all unread notifications */
 function getNotificationsCount() {
 	return Notifications.count({'read': false}).exec();
 }
 
+/* Queries the db to fetch the unread notifications or the other 10 older notifications*/
 function getNotifications(date) {
 	var promise;
 	if (date) {

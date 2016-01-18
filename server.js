@@ -22,21 +22,21 @@ app.set('views', './client');
 app.engine('html', require('ejs').renderFile);
 app.use(express.static(__dirname + '/client'));
 
-io = io.listen(app.listen(3000, function () {
+io = io.listen(app.listen(3000, function() {
     console.info('Application started on port : 3000');
 }));
 
 var db = mongoose.connect(dbConfig.uri);
 db.connection.on('open', function callback() {
     function getUnreadNotification() {
-        notificationController.getNotificationsCount().then(function (count) {
+        notificationController.getNotificationsCount().then(function(count) {
             io.emit('notificationCount', {'count': count});
         });
     }
 
     function insertNotifications() {
         var i = parseInt((Math.random() * notificationCollection.length), 10);
-        Notifications.create(notificationCollection[i], function (err, docs) {
+        Notifications.create(notificationCollection[i], function(err, docs) {
             if (err) {
                 console.error('Unable to save data : ', err);
             } else {
@@ -48,7 +48,7 @@ db.connection.on('open', function callback() {
 
     insertNotifications();
 
-    io.sockets.on('connection', function () {
+    io.sockets.on('connection', function() {
         console.log('A user is connected');
     });
 });

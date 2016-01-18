@@ -23,8 +23,15 @@ module.exports = function(app) {
 
 	/* The API gets the notification details for either next 10 notifications or all unread notifications*/
 	app.get('/notifications', function(req, res) {
+		notificationController.getNotifications().then(function(notifs) {
+			unreadNotifications = notifs;
+			res.send(notifs);
+		});
+	});
+
+	app.get('/notifications/old', function(req, res) {
 		var date = req.query.date;
-		notificationController.getNotifications(date).then(function(notifs) {
+		notificationController.getOldNotifications(date).then(function(notifs) {
 			unreadNotifications = notifs;
 			res.send(notifs);
 		});

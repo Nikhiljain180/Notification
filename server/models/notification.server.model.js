@@ -14,7 +14,7 @@ var notificationSchema = new Schema({
 	'read': Boolean,
 	'createdTimestamp': {
 		'type': Date,
-		'default': Date.now()
+		'default': Date.now
 	}
 });
 

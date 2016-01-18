@@ -33,6 +33,7 @@
 }
 .notification {
     display: inline-block;
+    cursor: pointer;
 }
 .tag {
     display: inline-block;

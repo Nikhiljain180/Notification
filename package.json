@@ -8,7 +8,7 @@
   "author": "Nikhil Jain",
   "license": "MIT LICENSE",
   "engines":  {
-    "node": "6.0.0",
+    "node": "6.x",
     "npm": "3.3.12"
   },
   "dependencies": {

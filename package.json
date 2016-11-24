@@ -7,7 +7,7 @@
   },
   "author": "Nikhil Jain",
   "license": "MIT LICENSE",
-  "engines": {
+  "engines":  {
     "node": "5.4.0",
     "npm": "3.3.12"
   },

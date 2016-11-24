@@ -55,12 +55,12 @@
         'update': function(count) {
 
             /* show the unread notification count if there are any notifications */
-            if (count > 0) {
+            if (count >= 0) {
                 var node = $('.main-count');
                 node.removeClass('hide-element');
                 if (count < 100) {
                     for (var i = 0; i < node.length; i++) {
-                        node[i].innerHTML = count;
+                        node[i].innerHTML = count ;
                     }
                 } else {
                     for (var j = 0; j < node.length; j++) {
@@ -125,7 +125,9 @@
         * Create Notification DOM element
         * */
         'getNotifListNode': function(notif, oldOrNew) {
+
             var notifTime = notification.formatDatetime(notif.createdTimestamp);
+            notif.user =  notif.user || {};
 
             /* Create List Node */
             var listNode = document.createElement('div');
@@ -135,7 +137,14 @@
             /* Create user image node */
             var userImg = document.createElement('img');
             userImg.className = 'pull-left';
-            userImg.src = 'static/img/' + notif.user.imgName;
+
+            if(notification.unread%2 == 0) {
+                userImg.src = 'static/img/p2.jpg';
+                notif.user.firstName = 'Rivigo';
+            }else{
+                userImg.src = 'static/img/p1.jpg';
+                notif.user.firstName = 'Make My Trip';
+            }
 
             /* Create notification text node */
             var contentDiv = document.createElement('div');
@@ -180,7 +189,8 @@
 
             /* If notification dropdown already opened, update the notification list */
             if (!notifContainer.hasClass('open')) {
-                notification.unread = parseInt($('.notification .main-count')[0].innerHTML);
+                notification.unread = !!(parseInt($('.notification .main-count')[0].innerHTML))?
+                    (parseInt($('.notification .main-count')[0].innerHTML)) : 0;
                 $('.list-item').addClass('read');
                 notification.get();
             } else {

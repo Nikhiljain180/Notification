@@ -13,9 +13,9 @@ var Notifications = mongoose.model('Notifications'),
 
 var notificationController = require('./server/controllers/notification-controllers');
 
-var DB_HOST = process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost',
+var DB_HOST = "notification:notification@ds163377.mlab.com:63377/notification",
     dbConfig = {
-        'uri': 'mongodb://' + DB_HOST + '/fullstack-notification'
+        'uri': 'mongodb://' + DB_HOST
     };
 
 app.set('views', './client');

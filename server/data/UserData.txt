@@ -1,9 +1,9 @@
 /* 0 */
 {
     "_id" : ObjectId("569889a0fa277bcdc5d7d5fe"),
-    "username" : "nehasharma",
-    "firstName" : "Neha",
-    "lastName" : "Sharma",
+    "username" : "NikhilJain",
+    "firstName" : "Nikhil",
+    "lastName" : "Jain",
     "imgName" : "p1.jpg"
 }
 

@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./server"
   },
-  "author": "Neha Sharma",
+  "author": "Nikhil Jain",
   "license": "MIT LICENSE",
   "engines": {
     "node": "5.4.0",

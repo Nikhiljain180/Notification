@@ -1,14 +1,7 @@
 ## Prerequisites
 Make sure you have installed all of the following prerequisites on your development machine:
 
-* Node.js - [Download & Install Node.js](http://www.nodejs.org/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.
-* MongoDB - [Download & Install MongoDB](http://www.mongodb.org/downloads), and make sure it's running on the default port (27017).
-
-### Getting the database
-Since the MongoDB will already be installed by now:
-
-* start mongo: open cmd, type **mongod**, you will need to create "data/db" folders in your current drive (e.g. Windows C: Drive, create C:\Data\db).
-* I have also attached the database dump. You can use the same database.
+* Node.js - [Download & Install Node.js](http://www.nodejs.org/download/) and the npm package manager. If you encounter any problems, you can also   use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node
 
 ### Compiling Your Application
 

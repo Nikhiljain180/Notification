@@ -1,0 +1,44 @@
+To run the application, please first install the node( https://nodejs.org/en/download/) :
+$ npm install
+
+Now to start the server, run:
+$ npm start
+
+Application will be started at the port 3000.
+
+You can access the application using http://localhost:3000
+
+
+About the Application : 
+_______________________
+
+1. The application will show all the Notification which is in Mongo Db server (also find in data/notifications.js)
+
+2. Getting all notification using socket between client and server side,Plese find all files are in server folder.
+
+3. frontend files including HyperText and scripting files are in static folder.
+
+4. used Mongo DB(Cloud side Mlab) for storing notification and also send from server to client side.
+ 
+5. Gulp is working as task runner.
+
+Details : 
+_______________________
+
+It Have following things has implemented:
+- The bell and the dropdown exactly as shown in above design.
+
+- The bell should show number of new notifications (unread ones).
+
+- Clicking on bell should show the dropdown with a nice animation and clicking again or clicking outside should close it.
+
+- On opening the dropdown the new notification count should reset to 0.
+
+- Create socket for push notification after given time interval.
+
+- 90% of part in  vanilla javascript and ajax call are in Jquery.
+
+- On page refresh, the notifications should be repopulated as it was last time(managing read notification in DataBase as well)
+
+
+ 

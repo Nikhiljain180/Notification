@@ -140,10 +140,10 @@
 
             if(notification.unread%2 == 0) {
                 userImg.src = 'static/img/p2.jpg';
-                notif.user.firstName = 'Rivigo';
+                notif.user.firstName = 'Nikhil';
             }else{
                 userImg.src = 'static/img/p1.jpg';
-                notif.user.firstName = 'Make My Trip';
+                notif.user.firstName = 'Rivigo';
             }
 
             /* Create notification text node */
